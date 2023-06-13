@@ -30,12 +30,17 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     
     const classCollection = client.db("artschooldb").collection("showclass");
+    const instructorCollection = client.db("artschooldb").collection("showinstructor");
 
     app.get('/showclass', async(req, res)=>{
         const result = await classCollection.find().toArray();
         res.send(result);
     })
 
+    app.get('/showinstructor', async(req, res)=>{
+        const result = await classCollection.find().toArray();
+        res.send(result);
+    })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
