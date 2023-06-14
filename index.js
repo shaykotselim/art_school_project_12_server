@@ -32,7 +32,15 @@ async function run() {
     const classCollection = client.db("artschooldb").collection("showclass");
     const instructorCollection = client.db("artschooldb").collection("showinstructor");
     const cartsCollection = client.db("artschooldb").collection("carts");
+    const userCollection = client.db("artschooldb").collection("users");
     
+    //user related Api
+    app.post('/users', async(req, res)=>{
+        const user = req.body;
+        const result = await userCollection.insertOne(user);
+        res.send(result);
+    })
+
     // Class Area Here.....................
     app.get('/showclass', async(req, res)=>{
         const result = await classCollection.find().toArray();
@@ -59,7 +67,6 @@ async function run() {
 
     app.post('/carts', async(req, res)=>{
         const item = req.body;
-        console.log(item);
         const result = await cartsCollection.insertOne(item);
         res.send(result);
     })
