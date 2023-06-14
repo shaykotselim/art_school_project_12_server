@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 require('dotenv').config();
@@ -51,9 +52,16 @@ async function run() {
         const result = await userCollection.insertOne(user);
         res.send(result);
     });
-
-    app.patch('users/admin/:id', async(req, res)=>{
+    app.delete('/users/:id', async(req, res)=>{
       const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await userCollection.deleteOne(query);
+      res.send(result);
+    })
+
+    app.patch('/users/admin/:id', async(req, res)=>{
+      const id = req.params.id;
+      console.log(id);
       const filter = {_id: new ObjectId(id)};
       const updateDoc = { 
         $set:{
@@ -62,7 +70,7 @@ async function run() {
       }
       const result = await userCollection.updateOne(filter, updateDoc);
       res.send(result);
-      
+
     })
 
 
@@ -71,14 +79,11 @@ async function run() {
         const result = await classCollection.find().toArray();
         res.send(result);
     })
-    
-    
     // Instructor Area Here--------------
     app.get('/showinstructor', async(req, res)=>{
         const result = await instructorCollection.find().toArray();
         res.send(result);
     })
-
     // Cart Collection Post  Area here............
     app.get('/carts', async(req, res)=>{
         const email = req.query.email;
@@ -89,26 +94,22 @@ async function run() {
         const result = await cartsCollection.find(query).toArray();
         res.send(result)
     })
-
     app.post('/carts', async(req, res)=>{
         const item = req.body;
         const result = await cartsCollection.insertOne(item);
         res.send(result);
     })
-
     app.delete('/carts/:id', async (req, res) => {
         const id = req.params.id;
         const query = { _id: new ObjectId(id) };
         const result = await cartsCollection.deleteOne(query);
         res.send(result);
       });
-      
-
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
-    // Ensures that the client will close when you finish/error
+  // Ensures that the client will close when you finish/error
     
   }
 }
