@@ -1,11 +1,12 @@
 const express = require("express");
 const app = express();
+require("dotenv").config();
 const cors = require("cors");
 const stripe = require("stripe")(process.env.PAYMENT_SECRET);
 const jwt = require("jsonwebtoken");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
-require("dotenv").config();
-require("dotenv").config();
+
+
 
 const port = process.env.PORT || 5000;
 
@@ -54,6 +55,8 @@ async function run() {
       .collection("showinstructor");
     const cartsCollection = client.db("artschooldb").collection("carts");
     const userCollection = client.db("artschooldb").collection("users");
+
+    const paymentCollection = client.db("artschool").collection("payments");
     //jwt--------------
 
     // app.post('/jwt', (req, res)=>{
@@ -201,6 +204,36 @@ async function run() {
         clientSecret: paymentIntent.client_secret,
       });
     });
+
+    app.post("/payments", async (req, res) => {
+      const paymentInfo = req.body;
+      const insertedResult = await paymentCollection.insertOne(paymentInfo);
+      const query = {
+        _id: {
+          $in: paymentInfo.selectedCourse.map((id)=> new ObjectId(id)),
+        },
+      };
+      const deletedConfirm = await cartsCollection.deleteMany(query);
+      
+      
+      // const updateCourseQuery = {
+      //   _id: {
+      //     $in: paymentInfo.coursesId.map((id)=> new ObjectId(id)),
+      //   },
+      // };
+      // const updateCourseOptions = {
+      //   $inc: { total_students: 1, available_seats: -1 },
+      // };
+      // const updateCourseResult = await classesCollection.updateMany(
+      //   updateCourseQuery,
+      //   updateCourseOptions
+      // );
+
+      // send an email
+
+      
+      res.send({ insertedResult, deletedConfirm});
+    });
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });
     console.log(
@@ -214,7 +247,7 @@ run().catch(console.dir);
 
 //--------------------------------------
 app.get("/", (req, res) => {
-  res.json("Art School is Drawing");
+  res.send("Port is on 50000");
 });
 
 app.listen(port, () => {
