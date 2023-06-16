@@ -59,13 +59,7 @@ async function run() {
     const paymentCollection = client.db("artschool").collection("payments");
     //jwt--------------
 
-    // app.post('/jwt', (req, res)=>{
-    //   const user = req.body;
-    //   const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn:'1h'})
-
-    //   res.send({token})
-    // })
-    //user related Api
+    
 
     app.get("/users/admin/:email", async (req, res) => {
       const email = req.params.email;
@@ -139,12 +133,7 @@ async function run() {
     });
     app.post("/showclass", async (req, res) => {
       const clss = req.body;
-      // console.log(user);
-      // const query = {email: user.email};
-      // const existingUser = await userCollection.findOne(query);
-      // if(existingUser){
-      //     return res.send({message:'user already exists'})
-      // }
+      
 
       const result = await classCollection.insertOne(clss);
       res.send(result);
@@ -164,15 +153,7 @@ async function run() {
     app.get("/carts", async (req, res) => {
       const email = req.query.email;
 
-      // jwt Area-------------------------------Start.
-      // if(!email){
-      //     res.send([]);
-      // }
-      // const decodedEmail = req.decoded.email;
-      // if(email !== decodedEmail){
-      //     return res.status(401).send( {error: true, message:'probidden access'})
-      // }
-      // Jwt Area --------------------------------End.
+     
 
       const query = { email: email };
       const result = await cartsCollection.find(query).toArray();
@@ -215,23 +196,7 @@ async function run() {
       };
       const deletedConfirm = await cartsCollection.deleteMany(query);
       
-      
-      // const updateCourseQuery = {
-      //   _id: {
-      //     $in: paymentInfo.coursesId.map((id)=> new ObjectId(id)),
-      //   },
-      // };
-      // const updateCourseOptions = {
-      //   $inc: { total_students: 1, available_seats: -1 },
-      // };
-      // const updateCourseResult = await classesCollection.updateMany(
-      //   updateCourseQuery,
-      //   updateCourseOptions
-      // );
-
-      // send an email
-
-      
+    
       res.send({ insertedResult, deletedConfirm});
     });
     // Send a ping to confirm a successful connection
